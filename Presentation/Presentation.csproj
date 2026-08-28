@@ -19,15 +19,15 @@
 
     <Target Name="BuildFrontend" BeforeTargets="Publish">
         <Exec
-                WorkingDirectory="$(MSBuildProjectDirectory)\..\frontend"
+                WorkingDirectory="$(MSBuildProjectDirectory)\..\Frontend"
                 Command="npm ci" />
 
         <Exec
-                WorkingDirectory="$(MSBuildProjectDirectory)\..\frontend"
+                WorkingDirectory="$(MSBuildProjectDirectory)\..\Frontend"
                 Command="npm run build" />
 
         <ItemGroup>
-            <FrontendFiles Include="$(MSBuildProjectDirectory)\..\frontend\dist\**\*" />
+            <FrontendFiles Include="$(MSBuildProjectDirectory)\..\Frontend\dist\**\*" />
         </ItemGroup>
 
         <Copy
