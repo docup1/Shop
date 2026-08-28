@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
+    </ItemGroup>
+
+    <Target Name="BuildFrontend" BeforeTargets="Publish">
+        <Exec
+                WorkingDirectory="$(MSBuildProjectDirectory)\..\frontend"
+                Command="npm ci" />
+
+        <Exec
+                WorkingDirectory="$(MSBuildProjectDirectory)\..\frontend"
+                Command="npm run build" />
+
+        <ItemGroup>
+            <FrontendFiles Include="$(MSBuildProjectDirectory)\..\frontend\dist\**\*" />
+        </ItemGroup>
+
+        <Copy
+                SourceFiles="@(FrontendFiles)"
+                DestinationFolder="$(MSBuildProjectDirectory)\wwwroot\%(RecursiveDir)" />
+    </Target>
+
+</Project>
