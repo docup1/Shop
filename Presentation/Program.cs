@@ -1,4 +1,5 @@
 using Infrastructure.DataBase;
+using Infrastructure.DataBase.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("Default"));
 });
+
+builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<OrderRepository>();
+builder.Services.AddScoped<SessionRepository>();
 
 var app = builder.Build();
 

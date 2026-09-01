@@ -28,6 +28,25 @@ public class Order
         CreatedAt = DateTime.UtcNow;
     }
 
+    private Order(Guid id, Guid userId, string senderCity, string recipientCity,
+        string senderAddress, string recipientAddress, int weight, Status status, DateTime createdAt)
+    {
+        Id = id;
+        UserId = userId;
+        SenderCity = senderCity;
+        RecipientCity = recipientCity;
+        SenderAddress = senderAddress;
+        RecipientAddress = recipientAddress;
+        Weight = weight;
+        Status = status;
+        CreatedAt = createdAt;
+    }
+
+    /// <summary>Восстановление полностью материализованной сущности (для чтения из БД).</summary>
+    public static Order Restore(Guid id, Guid userId, string senderCity, string recipientCity,
+        string senderAddress, string recipientAddress, int weight, Status status, DateTime createdAt)
+        => new(id, userId, senderCity, recipientCity, senderAddress, recipientAddress, weight, status, createdAt);
+
     public static Order Create(Guid userId, string senderCity, string recipientCity,
         string senderAddress, string recipientAddress, int weight)
     {

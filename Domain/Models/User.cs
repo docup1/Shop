@@ -15,6 +15,14 @@ public class User
         IsAdmin = isAdmin;
     }
 
+    private User(Guid id, string userName, string passwordHash, bool isAdmin)
+    {
+        Id = id;
+        UserName = userName;
+        PasswordHash = passwordHash;
+        IsAdmin = isAdmin;
+    }
+
     public static User Create(string userName, string passwordHash, bool isAdmin = false)
     {
         if (string.IsNullOrWhiteSpace(userName))
@@ -24,4 +32,8 @@ public class User
 
         return new User(userName, passwordHash, isAdmin);
     }
+
+    /// <summary>Восстановление полностью материализованной сущности (для чтения из БД).</summary>
+    public static User Restore(Guid id, string userName, string passwordHash, bool isAdmin)
+        => new(id, userName, passwordHash, isAdmin);
 }
