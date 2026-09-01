@@ -8,7 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.1" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.1">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -28,21 +29,15 @@
     </ItemGroup>
 
     <Target Name="BuildFrontend" BeforeTargets="Publish">
-        <Exec
-                WorkingDirectory="$(MSBuildProjectDirectory)\..\Frontend"
-                Command="npm ci" />
+        <Exec WorkingDirectory="$(MSBuildProjectDirectory)\..\Frontend" Command="npm ci" />
 
-        <Exec
-                WorkingDirectory="$(MSBuildProjectDirectory)\..\Frontend"
-                Command="npm run build" />
+        <Exec WorkingDirectory="$(MSBuildProjectDirectory)\..\Frontend" Command="npm run build" />
 
         <ItemGroup>
             <FrontendFiles Include="$(MSBuildProjectDirectory)\..\Frontend\dist\**\*" />
         </ItemGroup>
 
-        <Copy
-                SourceFiles="@(FrontendFiles)"
-                DestinationFolder="$(MSBuildProjectDirectory)\wwwroot\%(RecursiveDir)" />
+        <Copy SourceFiles="@(FrontendFiles)" DestinationFolder="$(MSBuildProjectDirectory)\wwwroot\%(RecursiveDir)" />
     </Target>
 
 </Project>
