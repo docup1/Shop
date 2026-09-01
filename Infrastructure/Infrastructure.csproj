@@ -8,9 +8,14 @@
 
     <ItemGroup>
       <Folder Include="Cache\" />
-      <Folder Include="DataBase\" />
       <Folder Include="Hash\" />
       <Folder Include="JWT\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="EntityFramework" Version="6.6.0-preview1-final" />
+      <PackageReference Include="EntityFramework6.Npgsql" Version="6.4.3" />
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     </ItemGroup>
 
 </Project>

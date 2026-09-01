@@ -17,6 +17,10 @@
         </Content>
     </ItemGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    </ItemGroup>
+
     <Target Name="BuildFrontend" BeforeTargets="Publish">
         <Exec
                 WorkingDirectory="$(MSBuildProjectDirectory)\..\Frontend"
