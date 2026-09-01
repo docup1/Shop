@@ -1,3 +1,4 @@
+using Infrastructure.DataBase.Configurations;
 using Infrastructure.DataBase.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,5 +14,11 @@ public class ApplicationDbContext : DbContext
             DbContextOptions<ApplicationDbContext> options) 
         : base(options)
     {
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+        base.OnModelCreating(modelBuilder);
     }
 }
