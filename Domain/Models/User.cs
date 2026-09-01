@@ -36,4 +36,7 @@ public class User
     /// <summary>Восстановление полностью материализованной сущности (для чтения из БД).</summary>
     public static User Restore(Guid id, string userName, string passwordHash, bool isAdmin)
         => new(id, userName, passwordHash, isAdmin);
+
+    /// <summary>Возвращает копию с новой ролью (иммутабельный стиль).</summary>
+    public User SetAdmin(bool isAdmin) => new(Id, UserName, PasswordHash, isAdmin);
 }

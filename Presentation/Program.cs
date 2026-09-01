@@ -1,4 +1,5 @@
 using System.Text;
+using Application.Services;
 using Domain.Contracts;
 using Infrastructure.Cache;
 using Infrastructure.DataBase;
@@ -8,6 +9,7 @@ using Infrastructure.DataBase.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Presentation.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,9 +22,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         builder.Configuration.GetConnectionString("Default"));
 });
 
-builder.Services.AddScoped<UserRepository>();
-builder.Services.AddScoped<OrderRepository>();
-builder.Services.AddScoped<SessionRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<ISessionRepository, SessionRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
 builder.Services.AddSingleton(TimeProvider.System);
@@ -37,6 +40,16 @@ var jwtOptions = builder.Configuration
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
 builder.Services.AddSingleton<ITokenService, TokenService>();
+
+builder.Services.AddScoped<AuthService>(sp => new AuthService(
+    sp.GetRequiredService<IUserRepository>(),
+    sp.GetRequiredService<ISessionRepository>(),
+    sp.GetRequiredService<IPasswordHasher>(),
+    sp.GetRequiredService<ITokenService>(),
+    sp.GetRequiredService<IUnitOfWork>(),
+    TimeSpan.FromDays(jwtOptions.SessionLifetimeDays)));
+builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<UserService>();
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -59,6 +72,8 @@ builder.Services
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
