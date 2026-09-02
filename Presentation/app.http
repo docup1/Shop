@@ -1,6 +1,104 @@
-@app_HostAddress = http://localhost:5025
+@baseUrl = http://localhost:5025
 
-GET {{app_HostAddress}}/weatherforecast/
-Accept: application/json
+### Регистрация пользователя
+# @name register
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
 
-###
+{
+  "userName": "alice",
+  "password": "password123"
+}
+
+> {%
+    client.global.set("accessToken", response.body.accessToken);
+    client.global.set("refreshToken", response.body.refreshToken);
+%}
+
+### Вход
+# @name login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "userName": "alice",
+  "password": "password123"
+}
+
+> {%
+    client.global.set("accessToken", response.body.accessToken);
+    client.global.set("refreshToken", response.body.refreshToken);
+%}
+
+### Обновить access-токен по refresh-токену
+# @name refresh
+POST {{baseUrl}}/api/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+> {%
+    client.global.set("accessToken", response.body.accessToken);
+%}
+
+### Профиль текущего пользователя
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{accessToken}}
+
+### Завершить текущую сессию (logout)
+POST {{baseUrl}}/api/auth/logout
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### Создать заказ
+# @name createOrder
+POST {{baseUrl}}/api/orders
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "senderCity": "Санкт-Петербург",
+  "recipientCity": "Москва",
+  "senderAddress": "Невский пр., 1",
+  "recipientAddress": "Тверская ул., 10",
+  "weight": 5
+}
+
+> {%
+    client.global.set("orderId", response.body.id);
+%}
+
+### Мои заказы (страница)
+GET {{baseUrl}}/api/orders?pageSize=20&cursor=
+Authorization: Bearer {{accessToken}}
+
+### Заказ по id
+GET {{baseUrl}}/api/orders/{{orderId}}
+Authorization: Bearer {{accessToken}}
+
+### Каталог заказов для админа с фильтром по статусу (только админ)
+GET {{baseUrl}}/api/orders?status=New&pageSize=10
+Authorization: Bearer {{accessToken}}
+
+### Сменить статус заказа (только админ)
+PATCH {{baseUrl}}/api/orders/{{orderId}}/status
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "status": "InProgress"
+}
+
+### Назначить администратором (только админ, требует действующего админа в БД)
+POST {{baseUrl}}/api/users/bob-id/admin
+Authorization: Bearer {{accessToken}}
+
+### Снять роль администратора (только админ)
+DELETE {{baseUrl}}/api/users/bob-id/admin
+Authorization: Bearer {{accessToken}}
