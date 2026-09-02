@@ -31,6 +31,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<ISessionRepository, SessionRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.Configure<AdminSeedOptions>(builder.Configuration.GetSection(AdminSeedOptions.SectionName));
+builder.Services.AddScoped<AdminSeeder>();
 
 builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
 builder.Services.AddSingleton(TimeProvider.System);
@@ -77,6 +79,14 @@ builder.Services
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+// Гарантируем наличие администратора из конфигурации (Seed:Admin).
+using (var scope = app.Services.CreateScope())
+{
+    await scope.ServiceProvider
+        .GetRequiredService<AdminSeeder>()
+        .SeedAsync();
+}
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
